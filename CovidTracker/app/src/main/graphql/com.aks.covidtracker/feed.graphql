@@ -1,0 +1,13 @@
+query feed {
+  country(name: "India") {
+    states {
+      state
+      cases
+      deaths
+      recovered
+      todayCases
+      todayDeaths
+      todayRecovered
+    }
+  }
+}

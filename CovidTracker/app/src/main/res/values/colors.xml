@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary color of the app (shown in the app bar) -->
+    <color name="colorPrimary">#03A9F4</color>
+
+    <!-- Primary dark color of the app (shown in the status bar) -->
+    <color name="colorPrimaryDark">#03A9F4</color>
+
+    <!-- Accent color of the app -->
+    <color name="colorAccent">#40C4FF</color>
+
+    <color name="confirmed">#ff073a</color>
+    <color name="active">#007bff</color>
+    <color name="recovered">#28a745</color>
+    <color name="deceased">#6c757d</color>
+
+<!--    <color name="stroke_color">-->
+<!--        <selector xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--            <item android:color="?attr/colorPrimary" android:state_checked="true"/>-->
+<!--            <item android:alpha="0.12" android:color="?attr/colorOnSurface" android:state_checked="false"/>-->
+<!--        </selector>-->
+<!--    </color>-->
+
+</resources>

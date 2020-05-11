@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="16dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="20dp"
+        app:rippleColor="@color/active"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Maharastra"
+                android:textAllCaps="true"
+                android:textSize="26sp" />
+
+            <TextView
+                android:id="@+id/conf_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/state"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:text="Confirmed: "
+                android:textAllCaps="true"
+                android:textColor="@color/confirmed"
+                android:textSize="20sp" />
+
+
+            <TextView
+                android:id="@+id/conf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/state"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_toRightOf="@+id/conf_text"
+                android:fontFamily="sans-serif-medium"
+                android:text="20,000"
+                android:textAllCaps="true"
+                android:textColor="@color/confirmed"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/conf_today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/linear_layout_stats"
+                android:layout_marginBottom="10dp"
+                android:layout_toRightOf="@+id/conf"
+                android:fontFamily="sans-serif-condensed-light"
+                android:text="+20,000"
+                android:textAllCaps="true"
+                android:textColor="@color/confirmed"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:id="@+id/linear_layout_stats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/conf_text"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/active_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="ACTIVE"
+                        android:textAllCaps="true"
+                        android:textColor="@color/active"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/active"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="15,000"
+                        android:textAllCaps="true"
+                        android:textColor="@color/active"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/active_today"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:text="+15,000"
+                        android:textAllCaps="true"
+                        android:textColor="@color/active"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/recovered_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Recovered"
+                        android:textAllCaps="true"
+                        android:textColor="@color/recovered"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/recovered"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="5,000"
+                        android:textAllCaps="true"
+                        android:textColor="@color/recovered"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/recovered_today"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:text="+5,000"
+                        android:textAllCaps="true"
+                        android:textColor="@color/recovered"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/deceased_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="DECEASED"
+                        android:textAllCaps="true"
+                        android:textColor="@color/deceased"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/deceased"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="15,000"
+                        android:textAllCaps="true"
+                        android:textColor="@color/deceased"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/deceased_today"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:text="+15,000"
+                        android:textAllCaps="true"
+                        android:textColor="@color/deceased"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>
