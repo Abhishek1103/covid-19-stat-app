@@ -4,9 +4,16 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.aks.covidtracker.Constants;
+import com.apollographql.apollo.ApolloClient;
+import com.apollographql.apollo.cache.http.ApolloHttpCache;
+import com.apollographql.apollo.cache.http.DiskLruHttpCacheStore;
+
+import okhttp3.OkHttpClient;
+
 public class QueryUtils {
 
-    private static final String LOG_TAG = QueryUtils.class.getName();
+    private static final String TAG = "QueryUtils";
 
 //    public static String readFromStream(InputStream inputStream) throws IOException {
 //        StringBuilder output = new StringBuilder();
@@ -84,5 +91,46 @@ public class QueryUtils {
         return num;
     }
 
+    // Create an OkHttpClient
+    public static OkHttpClient initOkHttpClient(){
+        OkHttpClient okHttpClient = null;
+        try {
+            okHttpClient = new OkHttpClient.Builder().build();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            return okHttpClient;
+        }
+    }
+
+    // create an Apollo client with an OkHTTPClient and DiskLRUCache
+    public static ApolloClient buildApolloClient(OkHttpClient okHttpClient, DiskLruHttpCacheStore cacheStore){
+               ApolloClient apolloClient = ApolloClient.builder()
+                .serverUrl(Constants.BASE_URL)
+                .httpCache(new ApolloHttpCache(cacheStore))
+                .okHttpClient(okHttpClient)
+                .build();
+
+               return apolloClient;
+    }
+
+    public static String getMonth(int num){
+        switch(num){
+            case 1: return "Jan";
+            case 2: return "Feb";
+            case 3: return "Mar";
+            case 4: return "Apr";
+            case 5: return "May";
+            case 6: return "Jun";
+            case 7: return "Jul";
+            case 8: return "Aug";
+            case 9: return "Sep";
+            case 10: return "Oct";
+            case 11: return "Nov";
+            case 12: return "Dec";
+        }
+        return ""+num;
+    }
 
 }

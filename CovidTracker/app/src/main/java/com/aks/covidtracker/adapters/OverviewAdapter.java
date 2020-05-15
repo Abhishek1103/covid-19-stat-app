@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,8 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.ViewHo
     private List<OverviewItem> dataList;
     private Context context;
     private OnStateClickListener onStateClickListener;
+    private final String DOWN_ARROW = "\u2193";
+    private final String UP_ARROW = "\u2191";
 
     public OverviewAdapter(List<OverviewItem> dataList, Context context, OnStateClickListener onStateClickListener) {
         this.dataList = dataList;
@@ -47,11 +50,19 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.ViewHo
         holder.activeTextView.setText(item.getActive());
         holder.recoveredTextView.setText(item.getRecovered());
         holder.deceasedTextView.setText(item.getDeceased());
+        String active = item.getActive_today();
+        if(active.charAt(0) == '-') {
+            holder.activeTodayTextView.setText(item.getActive_today() + " "+ DOWN_ARROW);
 
-        holder.confTodayTextView.setText("+" + item.getConfirmed_today());
-        holder.activeTodayTextView.setText("+" + item.getActive_today());
-        holder.recoveredTodayTextView.setText("+" + item.getRecovered_today());
-        holder.deceasedTodayTextView.setText("+" + item.getDeceased_today());
+        }
+        else holder.activeTodayTextView.setText("+" + active + " "+ UP_ARROW );
+        holder.confTodayTextView.setText("+" +  item.getConfirmed_today() + " "+ UP_ARROW );
+        holder.recoveredTodayTextView.setText("+" + item.getRecovered_today() + " "+ UP_ARROW );
+        holder.deceasedTodayTextView.setText("+" + item.getDeceased_today() + " "+ UP_ARROW );
+
+//        if(item.getState().trim().equalsIgnoreCase("INDIA")){
+//            Log.i(TAG, "onBindViewHolder: Showing Graph Icon");
+//        }else holder.graphIconImageView.setVisibility(View.GONE);
     }
 
     @Override
@@ -71,6 +82,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.ViewHo
         TextView activeTodayTextView;
         TextView recoveredTodayTextView;
         TextView deceasedTodayTextView;
+        ImageView graphIconImageView;
 
         OnStateClickListener onStateClickListener;
 
@@ -87,6 +99,8 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.ViewHo
             activeTodayTextView = itemView.findViewById(R.id.active_today);
             recoveredTodayTextView = itemView.findViewById(R.id.recovered_today);
             deceasedTodayTextView = itemView.findViewById(R.id.deceased_today);
+            graphIconImageView = itemView.findViewById(R.id.graph_icon_view);
+
 
             this.onStateClickListener = onStateClickListener;
 

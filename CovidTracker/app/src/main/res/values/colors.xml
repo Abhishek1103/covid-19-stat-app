@@ -13,6 +13,7 @@
     <color name="active">#007bff</color>
     <color name="recovered">#28a745</color>
     <color name="deceased">#6c757d</color>
+    <color name="white">#ffffff</color>
 
 <!--    <color name="stroke_color">-->
 <!--        <selector xmlns:android="http://schemas.android.com/apk/res/android">-->

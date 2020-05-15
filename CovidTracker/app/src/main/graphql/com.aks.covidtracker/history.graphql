@@ -1,0 +1,13 @@
+query history{
+  country(name: "India"){
+    historical {
+      date
+      cases
+      deaths
+      recovered
+      todayCases
+      todayRecovered
+      todayDeaths
+    }
+  }
+}

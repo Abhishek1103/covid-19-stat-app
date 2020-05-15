@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aks.covidtracker.Constants;
 import com.aks.covidtracker.FeedQuery;
 import com.aks.covidtracker.adapters.OverviewAdapter;
 import com.aks.covidtracker.R;
@@ -36,7 +38,7 @@ import okhttp3.OkHttpClient;
 public class MainActivity extends AppCompatActivity implements OverviewAdapter.OnStateClickListener
 /*implements LoaderManager.LoaderCallbacks<List<OverviewItem>> */ {
 
-    private final String LOG_TAG = MainActivity.class.getName();
+    private static final String TAG = "MainActivity";
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter recyclerviewAdapter;
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
     List<FeedQuery.State> statesList = null;
 
     private ApolloClient apolloClient = null;
-    private static final String BASE_URL = "https://covidstat.info/graphql";
+    private static final String BASE_URL = Constants.BASE_URL;
     ProgressBar loadingSpinner = null;
     TextView errorTextView = null;
 
@@ -52,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setTitle(getString(R.string.main_activity_title));
+
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -89,19 +94,14 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
         long size = 1024*1024;
         DiskLruHttpCacheStore cacheStore = new DiskLruHttpCacheStore(file, size);
 
-        OkHttpClient okHttpClient = null;
-        try {
-            okHttpClient = new OkHttpClient.Builder().build();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        OkHttpClient okHttpClient = QueryUtils.initOkHttpClient();
 
-
-        apolloClient = ApolloClient.builder()
-                .serverUrl(BASE_URL)
-                .httpCache(new ApolloHttpCache(cacheStore))
-                .okHttpClient(okHttpClient)
-                .build();
+//        apolloClient = ApolloClient.builder()
+//                .serverUrl(BASE_URL)
+//                .httpCache(new ApolloHttpCache(cacheStore))
+//                .okHttpClient(okHttpClient)
+//                .build();
+        apolloClient = QueryUtils.buildApolloClient(okHttpClient, cacheStore);
 
         apolloClient.query(FeedQuery.builder()
         .build())
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
                 .enqueue(new ApolloCall.Callback<FeedQuery.Data>() {
             @Override
             public void onResponse(@NotNull Response<FeedQuery.Data> response) {
-                Log.w(LOG_TAG+ response.getData().country().states().get(0),""+response.getData().country().states().get(0));
+                //Log.w(TAG+ response.getData().country().states().get(0),""+response.getData().country().states().get(0));
 
                 statesList = response.getData().country().states();
                 for(FeedQuery.State s: statesList){
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
                                 QueryUtils.formatNumbers(todayRecovered.toString()),
                                 QueryUtils.formatNumbers(todayDeceased.toString())));
                     }catch (Exception e){
-                        Log.e(LOG_TAG, "Error in processing a state item", e);
+                        Log.e(TAG, "Error in processing a state item", e);
                     }
                 }
 
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
                         errorTextView.setVisibility(View.VISIBLE);
                     }
                 });
-                Log.e(LOG_TAG, "Fail to load data",e);
+                Log.e(TAG, "Fail to load data",e);
             }
         });
     }
@@ -172,8 +172,12 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
     public void onStateClick(int position) {
         OverviewItem item = dataList.get(position);
         //TODO: when an item on recycler view is clicked
-
-        Toast t = Toast.makeText(this,item.getState()+"\n"+item.getConfirmed(),Toast.LENGTH_SHORT);
-        t.show();
+        Log.i(TAG, "onStateClick: "+item.getState()+" clicked.");
+        //if(item.getState().equalsIgnoreCase("INDIA")){
+            Log.i(TAG, "onStateClick: Opening GraphActivity");
+            Intent intent = new Intent(this, GraphActivity.class);
+            intent.putExtra("state", item.getState());
+            startActivity(intent);
+        //}
     }
 }

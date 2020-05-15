@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Covid-19 Tracker</string>
     <string name="plus_symbol">+</string>
+    <string name="main_activity_title">COVID-19 India Cases</string>
+    <string name="graph_activity_title">Overview of </string>
+    <string name="graph_icon_view_description">"Graph Available"</string>
 </resources>
