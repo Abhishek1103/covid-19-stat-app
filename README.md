@@ -14,3 +14,5 @@ The app shows:
 ## Data source
 
 All the data comes from: [web-covid-api](https://covidstat.info/graphql)
+
+### To download the android app click [here](https://github.com/Abhishek1103/covid-19-stat-app/releases/latest/download/app-release.apk)
