@@ -12,4 +12,4 @@ The app shows data:
 
 ## Data source
 
-All the data come from: (web-covid-api)[https://covidstat.info/graphql]
+All the data come from: [web-covid-api](https://covidstat.info/graphql)
