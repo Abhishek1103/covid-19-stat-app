@@ -7,6 +7,15 @@ The app shows:
   * Active cases (Total and Daily increase)
   * Recovered cases (Total and Daily increase)
   * Number of Deceased (Total and Daily increase)
+  * Total Recovery and Mortality Rates
+  * Moving averages of 2 weeks for:
+    * New Cases per day
+    * Recoveries per day
+    * Deaths per day
+  * Avg. growth rate of the following for past 2 weeks:
+    * New Cases
+    * Recoveries
+    * Deaths
 * Nation-wide statistic
 * Graphical representation of trends in increase and spread on Covid-19 cases.
 
