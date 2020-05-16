@@ -4,4 +4,7 @@
     <string name="main_activity_title">COVID-19 India Cases</string>
     <string name="graph_activity_title">Overview of </string>
     <string name="graph_icon_view_description">"Graph Available"</string>
+    <string name="additional_info">Additional Info</string>
+    <string name="total">Overall</string>
+    <string name="past_2w">Past Two Weeks</string>
 </resources>

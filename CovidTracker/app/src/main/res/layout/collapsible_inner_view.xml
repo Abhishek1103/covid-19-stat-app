@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/inner_view_additional_info"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<!--    <com.google.android.material.card.MaterialCardView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:padding="0dp"-->
+<!--        app:cardCornerRadius="4dp"-->
+<!--        app:cardElevation="0dp">-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="5">
+
+                <TextView
+                    android:id="@+id/past_2w_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="@string/past_2w"
+                    android:textAllCaps="true"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/avg_new_cases_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Cases per Day: "
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:tooltipText="Average new cases per day in the past two weeks."
+                        android:textColor="@color/confirmed"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        />
+
+                    <TextView
+                        android:id="@+id/avg_new_cases_2w"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/recovery_rate_text_2w"
+                        android:text="400"
+                        android:layout_marginBottom="4dp"
+                        android:textColor="@color/confirmed"
+                        />
+
+                    <TextView
+                        android:id="@+id/recovery_rate_text_2w"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recoveries per Day: "
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:textColor="@color/recovered"
+                        android:layout_below="@id/avg_new_cases_text"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:tooltipText="Average recoveries per day in the past two weeks."
+                        />
+
+                    <TextView
+                        android:id="@+id/avg_recovery_2w"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/recovery_rate_text_2w"
+                        android:text="200"
+                        android:layout_marginBottom="4dp"
+                        android:textColor="@color/recovered"
+                        android:layout_below="@id/avg_new_cases_2w"
+                        />
+
+                    <TextView
+                        android:id="@+id/death_rate_text_2w"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/recovery_rate_text_2w"
+                        android:text="Deaths per Day:"
+                        android:layout_marginEnd="8dp"
+                        android:textColor="@color/deceased"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:tooltipText="Average deaths per day in the past two weeks."
+                        />
+
+                    <TextView
+                        android:id="@+id/avg_death_2w"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/recovery_rate_text_2w"
+                        android:layout_below="@id/avg_recovery_2w"
+                        android:text="20"
+                        android:textColor="@color/deceased"
+                        />
+
+                </RelativeLayout>
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:orientation="vertical"
+                android:paddingLeft="8dp"
+                >
+
+                <TextView
+                    android:id="@+id/beginning_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="@string/total"
+                    android:textAllCaps="true"
+                    android:textSize="16sp" />
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <TextView
+                        android:id="@+id/recovery_rate_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recovery Rate: "
+                        android:tooltipText="Percentage of total confirmed cases which have recovered."
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:textColor="@color/recovered"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        />
+
+                    <TextView
+                        android:id="@+id/recovery_rate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/recovery_rate_text"
+                        android:text="62%"
+                        android:singleLine="true"
+                        android:layout_marginBottom="4dp"
+                        android:textColor="@color/recovered"
+                        />
+
+                    <TextView
+                        android:id="@+id/death_rate_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/recovery_rate_text"
+                        android:text="Mortality Rate:"
+                        android:tooltipText="Percentage of total cases who have lost their lives."
+                        android:layout_marginEnd="8dp"
+                        android:textColor="@color/deceased"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        />
+
+                    <TextView
+                        android:id="@+id/death_rate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/recovery_rate_text"
+                        android:layout_below="@id/recovery_rate"
+                        android:singleLine="true"
+                        android:text="62%"
+                        android:textColor="@color/deceased"
+                        />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+<!--    <View-->
+<!--        android:layout_width="350dp"-->
+<!--        android:layout_height="1dp"-->
+<!--       android:background="@android:color/darker_gray"-->
+<!--        android:layout_gravity="center"-->
+<!--        />-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/avg_growth_rate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="Avg. Growth Rate of Cases:"
+            android:tooltipText="Average rate of growth of new cases per day in the past 2 weeks."
+            android:textColor="@color/confirmed"
+            android:layout_marginEnd="8dp"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/avg_growth_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="6.0%"
+            android:layout_toEndOf="@id/avg_recovery_rate_text"
+            android:textColor="@color/confirmed"
+            android:textSize="16sp"
+            android:layout_alignParentRight="true"/>
+
+        <TextView
+            android:id="@+id/avg_recovery_rate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="Avg. Growth Rate of Recoveries:"
+            android:tooltipText="Average rate of growth of recovery per day in the past 2 weeks."
+            android:textColor="@color/recovered"
+            android:layout_marginEnd="8dp"
+            android:textSize="16sp"
+            android:layout_below="@id/avg_growth_rate_text"/>
+
+        <TextView
+            android:id="@+id/avg_recovery_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="6.0%"
+            android:layout_toEndOf="@id/avg_recovery_rate_text"
+            android:layout_below="@id/avg_growth_rate"
+            android:textColor="@color/recovered"
+            android:layout_alignParentRight="true"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/avg_mortality_rate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="Avg. Growth Rate of Deaths:"
+            android:tooltipText="Average rate of growth of deaths per day in the past 2 weeks."
+            android:textColor="@color/deceased"
+            android:layout_marginEnd="8dp"
+            android:textSize="16sp"
+            android:layout_below="@id/avg_recovery_rate_text"/>
+
+        <TextView
+            android:id="@+id/avg_mortality_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="6.0%"
+            android:layout_toEndOf="@id/avg_recovery_rate_text"
+            android:layout_below="@id/avg_recovery_rate"
+            android:textColor="@color/deceased"
+            android:layout_alignParentRight="true"
+            android:textSize="16sp" />
+
+
+
+    </RelativeLayout>
+
+<!--    </com.google.android.material.card.MaterialCardView>-->
+
+</LinearLayout>

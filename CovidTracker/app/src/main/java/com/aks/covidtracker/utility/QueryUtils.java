@@ -9,6 +9,8 @@ import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.cache.http.ApolloHttpCache;
 import com.apollographql.apollo.cache.http.DiskLruHttpCacheStore;
 
+import java.util.Locale;
+
 import okhttp3.OkHttpClient;
 
 public class QueryUtils {
@@ -131,6 +133,30 @@ public class QueryUtils {
             case 12: return "Dec";
         }
         return ""+num;
+    }
+
+    public static String calcRecoveryRate(Integer confirmed, Integer recovered){
+        Double ans = (((double)recovered)/((double)confirmed)) * 100.0;
+        if(ans.isNaN() || ans.isInfinite())
+            return "NA";
+        return String.format(Locale.US,"%.1f",ans);
+    }
+
+    public static String calcMortalityRate(Integer confirmed, Integer deaths){
+        Double ans = (((double)deaths)/((double)confirmed)) * 100.0;
+        if(ans.isNaN() || ans.isInfinite())
+            return "NA";
+        return String.format(Locale.US,"%.1f",ans);
+    }
+
+    public static String calcRate(Integer start, Integer end, Integer timePeriod){
+        Double s = (double)start;
+        Double e = (double)end;
+        Double time = timePeriod*1.0;
+        Double ans = 100 * (Math.pow(e/s, 1.0/time) -1);
+        if(ans.isNaN() || ans.isInfinite())
+            return "NA";
+        return String.format(Locale.US,"%.1f",ans);
     }
 
 }

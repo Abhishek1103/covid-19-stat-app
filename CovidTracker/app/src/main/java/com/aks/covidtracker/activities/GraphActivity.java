@@ -130,7 +130,6 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
                             //historicalList = response.getData().country().states().get(0).historical();
                             tempStateList = response.getData().country().states();
                             historicalList = getStateHistory(stateNameClicked, tempStateList);
-
                             int i =0;
                             for(HistoryallQuery.Historical h : historicalList){
                                 cases.add(new Entry(i, h.cases()));
