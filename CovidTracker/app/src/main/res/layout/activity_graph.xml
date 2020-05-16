@@ -9,9 +9,21 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="8dp"
+        android:paddingTop="0dp"
         android:background="@color/white"
-        android:layout_marginVertical="8dp"
+        android:layout_marginTop="4dp"
         xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <com.alespero.expandablecardview.ExpandableCardView
+            android:id="@+id/additional_info_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/linear_layout_stats"
+            app:title="@string/additional_info"
+            app:inner_view="@layout/collapsible_inner_view"
+            app:expandOnClick="true"
+            android:theme="@style/AppTheme"
+            />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"

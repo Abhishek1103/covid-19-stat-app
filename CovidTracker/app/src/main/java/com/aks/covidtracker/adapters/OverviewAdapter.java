@@ -62,36 +62,36 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.ViewHo
         holder.recoveredTodayTextView.setText("+" + item.getRecovered_today() + " "+ UP_ARROW );
         holder.deceasedTodayTextView.setText("+" + item.getDeceased_today() + " "+ UP_ARROW );
 
-        if(item.getRecovery_rate().equalsIgnoreCase("NA"))
-            holder.recoveryRate.setText(item.getRecovery_rate());
-        else holder.recoveryRate.setText(item.getRecovery_rate()+"%");
-
-        if(item.getMortality_rate().equalsIgnoreCase("NA"))
-            holder.mortalityRate.setText(item.getMortality_rate());
-        else holder.mortalityRate.setText(item.getMortality_rate()+"%");
-
-        holder.newCases2W.setText(item.getNew_cases_2w());
-        holder.recovered2W.setText(item.getRecovered_2w());
-        holder.deceased2W.setText(item.getDeath_2w());
-
-        if(item.getNew_cases_rate_2w().equalsIgnoreCase("NA"))
-            holder.newCases2WRate.setText(item.getNew_cases_rate_2w());
-        else holder.newCases2WRate.setText(item.getNew_cases_rate_2w()+"%");
-
-        if(item.getRecovery_rate_2w().equalsIgnoreCase("NA"))
-            holder.recovered2WRate.setText(item.getRecovery_rate_2w());
-        else holder.recovered2WRate.setText(item.getRecovery_rate_2w()+"%");
-
-        if(item.getMortality_rate_2w().equalsIgnoreCase("NA"))
-            holder.deceased2WRate.setText(item.getMortality_rate_2w());
-        else holder.deceased2WRate.setText(item.getMortality_rate_2w()+"%");
-
-        holder.expandableCardView.setOnExpandedListener(new ExpandableCardView.OnExpandedListener() {
-            @Override
-            public void onExpandChanged(View v, boolean isExpanded) {
-                Log.i(TAG, "onExpandChanged: "+isExpanded);
-            }
-        });
+//        if(item.getRecovery_rate().equalsIgnoreCase("NA"))
+//            holder.recoveryRate.setText(item.getRecovery_rate());
+//        else holder.recoveryRate.setText(item.getRecovery_rate()+"%");
+//
+//        if(item.getMortality_rate().equalsIgnoreCase("NA"))
+//            holder.mortalityRate.setText(item.getMortality_rate());
+//        else holder.mortalityRate.setText(item.getMortality_rate()+"%");
+//
+//        holder.newCases2W.setText(item.getNew_cases_2w());
+//        holder.recovered2W.setText(item.getRecovered_2w());
+//        holder.deceased2W.setText(item.getDeath_2w());
+//
+//        if(item.getNew_cases_rate_2w().equalsIgnoreCase("NA"))
+//            holder.newCases2WRate.setText(item.getNew_cases_rate_2w());
+//        else holder.newCases2WRate.setText(item.getNew_cases_rate_2w()+"%");
+//
+//        if(item.getRecovery_rate_2w().equalsIgnoreCase("NA"))
+//            holder.recovered2WRate.setText(item.getRecovery_rate_2w());
+//        else holder.recovered2WRate.setText(item.getRecovery_rate_2w()+"%");
+//
+//        if(item.getMortality_rate_2w().equalsIgnoreCase("NA"))
+//            holder.deceased2WRate.setText(item.getMortality_rate_2w());
+//        else holder.deceased2WRate.setText(item.getMortality_rate_2w()+"%");
+//
+//        holder.expandableCardView.setOnExpandedListener(new ExpandableCardView.OnExpandedListener() {
+//            @Override
+//            public void onExpandChanged(View v, boolean isExpanded) {
+//                Log.i(TAG, "onExpandChanged: "+isExpanded);
+//            }
+//        });
 
 
 //        if(item.getState().trim().equalsIgnoreCase("INDIA")){
@@ -117,12 +117,12 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.ViewHo
         TextView recoveredTodayTextView;
         TextView deceasedTodayTextView;
         ImageView graphIconImageView;
-        ExpandableCardView expandableCardView;
-        TextView recoveryRate;
-        TextView mortalityRate;
-
-        TextView newCases2W, recovered2W, deceased2W;
-        TextView newCases2WRate, recovered2WRate, deceased2WRate;
+//        ExpandableCardView expandableCardView;
+//        TextView recoveryRate;
+//        TextView mortalityRate;
+//
+//        TextView newCases2W, recovered2W, deceased2W;
+//        TextView newCases2WRate, recovered2WRate, deceased2WRate;
 
         OnStateClickListener onStateClickListener;
 
@@ -141,18 +141,18 @@ public class OverviewAdapter extends RecyclerView.Adapter<OverviewAdapter.ViewHo
             deceasedTodayTextView = itemView.findViewById(R.id.deceased_today);
             graphIconImageView = itemView.findViewById(R.id.graph_icon_view);
 
-            expandableCardView = itemView.findViewById(R.id.additional_info_card);
-
-            recoveryRate = itemView.findViewById(R.id.recovery_rate);
-            mortalityRate = itemView.findViewById(R.id.death_rate);
-
-            newCases2W = itemView.findViewById(R.id.avg_new_cases_2w);
-            recovered2W = itemView.findViewById(R.id.avg_recovery_2w);
-            deceased2W = itemView.findViewById(R.id.avg_death_2w);
-
-            newCases2WRate = itemView.findViewById(R.id.avg_growth_rate);
-            recovered2WRate = itemView.findViewById(R.id.avg_recovery_rate);
-            deceased2WRate = itemView.findViewById(R.id.avg_mortality_rate);
+//            expandableCardView = itemView.findViewById(R.id.additional_info_card);
+//
+//            recoveryRate = itemView.findViewById(R.id.recovery_rate);
+//            mortalityRate = itemView.findViewById(R.id.death_rate);
+//
+//            newCases2W = itemView.findViewById(R.id.avg_new_cases_2w);
+//            recovered2W = itemView.findViewById(R.id.avg_recovery_2w);
+//            deceased2W = itemView.findViewById(R.id.avg_death_2w);
+//
+//            newCases2WRate = itemView.findViewById(R.id.avg_growth_rate);
+//            recovered2WRate = itemView.findViewById(R.id.avg_recovery_rate);
+//            deceased2WRate = itemView.findViewById(R.id.avg_mortality_rate);
 
             this.onStateClickListener = onStateClickListener;
 

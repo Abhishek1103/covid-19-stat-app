@@ -212,16 +212,16 @@
 
             </LinearLayout>
 
-            <com.alespero.expandablecardview.ExpandableCardView
-                android:id="@+id/additional_info_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/linear_layout_stats"
-                app:title="@string/additional_info"
-                app:inner_view="@layout/collapsible_inner_view"
-                app:expandOnClick="true"
-                android:theme="@style/AppTheme"
-                />
+<!--            <com.alespero.expandablecardview.ExpandableCardView-->
+<!--                android:id="@+id/additional_info_card"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_below="@id/linear_layout_stats"-->
+<!--                app:title="@string/additional_info"-->
+<!--                app:inner_view="@layout/collapsible_inner_view"-->
+<!--                app:expandOnClick="true"-->
+<!--                android:theme="@style/AppTheme"-->
+<!--                />-->
 
         </RelativeLayout>
 

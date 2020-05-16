@@ -11,6 +11,7 @@ import com.aks.covidtracker.adapters.MyMarkerView;
 import com.aks.covidtracker.adapters.OverviewAdapter;
 import com.aks.covidtracker.models.OverviewItem;
 import com.aks.covidtracker.utility.QueryUtils;
+import com.alespero.expandablecardview.ExpandableCardView;
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.api.Response;
@@ -65,6 +66,16 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     List<Entry> cases, active, recovered, deaths, todayCases, todayRecovered, todayDeaths;
     public static ArrayList<String> xAxisValues = null;
     String stateNameClicked = null;
+    ExpandableCardView expandableCardView;
+    TextView recoveryRate;
+    TextView mortalityRate;
+
+    TextView newCases2W, recovered2W, deceased2W;
+    TextView newCases2WRate, recovered2WRate, deceased2WRate;
+
+    String recoveryRateTotal, mortalityRateTotal;
+    String avgRecovered2w, avgCases2w, avgDeath2w;
+    String casesGrowthRate, recoveryGrowthRate, deathGrowyhRate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +142,31 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
                             tempStateList = response.getData().country().states();
                             historicalList = getStateHistory(stateNameClicked, tempStateList);
                             int i =0;
+                            HistoryallQuery.Historical before2w = null;
+                            try {
+                                before2w = historicalList.get(historicalList.size() - 15);
+                            }catch (Exception e){
+                                try {
+                                    before2w = historicalList.get(historicalList.size()  - 7);
+                                }catch (Exception ex){
+                                    Log.e(TAG, "onResponse: ", ex);
+                                }
+                            }
+                            HistoryallQuery.Historical latest = historicalList.get(historicalList.size()-1);
+                            Integer casesLatest = historicalList.get(historicalList.size()-1).cases();
+                            Integer recoveredLatest = latest.recovered();
+                            Integer deceasedLatest = latest.deaths();
+
+                            setOverallRates(casesLatest, recoveredLatest, deceasedLatest);
+
+                            Integer avg_recovered_2w = (recoveredLatest - before2w.recovered())/14;
+                            Integer avg_cases_2w = (casesLatest - (before2w.cases()))/14;
+                            Integer avg_deaths_2w = (deceasedLatest - before2w.deaths())/14;
+
+                            setAvg2w(avg_cases_2w, avg_recovered_2w, avg_deaths_2w);
+                            setGrowthRates(casesLatest, recoveredLatest, deceasedLatest, before2w);
+
+
                             for(HistoryallQuery.Historical h : historicalList){
                                 cases.add(new Entry(i, h.cases()));
                                 recovered.add(new Entry(i, h.recovered()));
@@ -152,6 +188,8 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
                                 recoveredChart.setData(createLineData(recovered, "Recovered Cases"));
                                 deathChart.setData(createLineData(deaths, "Deceased Cases"));
                                 dailyNewChart.setData(createLineData(todayCases, "Daily New Cases"));
+
+                                displayAdditionalInfo();
 
                                 LineDataSet set1 = new LineDataSet(cases, "Confirmed");
                                 set1.setFillAlpha(100);
@@ -360,6 +398,19 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
         deathChart.setMarker(markerView);
         allChart.setMarker(markerView);
         dailyNewChart.setMarker(markerView);
+
+        expandableCardView = findViewById(R.id.additional_info_card);
+
+        recoveryRate = findViewById(R.id.recovery_rate);
+        mortalityRate = findViewById(R.id.death_rate);
+
+        newCases2W = findViewById(R.id.avg_new_cases_2w);
+        recovered2W = findViewById(R.id.avg_recovery_2w);
+        deceased2W = findViewById(R.id.avg_death_2w);
+
+        newCases2WRate = findViewById(R.id.avg_growth_rate);
+        recovered2WRate = findViewById(R.id.avg_recovery_rate);
+        deceased2WRate = findViewById(R.id.avg_mortality_rate);
     }
 
     public void setDescriptions(){
@@ -447,6 +498,49 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
             Log.e(TAG, "getStateHistory: Exception occured, cannot process state historical data",e );
         }
         return null;
+    }
+
+    public void setOverallRates(Integer cases, Integer recovered, Integer deceased){
+        recoveryRateTotal = QueryUtils.calcRecoveryRate(cases, recovered);
+        mortalityRateTotal = QueryUtils.calcMortalityRate(cases, deceased);
+    }
+
+    public void setAvg2w(Integer cases, Integer recovered, Integer deaths){
+        avgCases2w = QueryUtils.formatNumbers(cases.toString());
+        avgRecovered2w = QueryUtils.formatNumbers(recovered.toString());
+        avgDeath2w = QueryUtils.formatNumbers(deaths.toString());
+    }
+
+    public void setGrowthRates(Integer cases, Integer recovered, Integer deaths, HistoryallQuery.Historical before2w){
+        casesGrowthRate = QueryUtils.calcRate(before2w.cases(), cases, 14);
+        recoveryGrowthRate = QueryUtils.calcRate(before2w.recovered(),recovered, 14);
+        deathGrowyhRate = QueryUtils.calcRate(before2w.deaths(), deaths, 14);
+    }
+
+    public void displayAdditionalInfo(){
+        if(recoveryRateTotal.equalsIgnoreCase("NA"))
+            recoveryRate.setText(recoveryRateTotal);
+        else recoveryRate.setText(recoveryRateTotal+"%");
+
+        if(mortalityRateTotal.equalsIgnoreCase("NA"))
+            mortalityRate.setText(mortalityRateTotal);
+        else mortalityRate.setText(mortalityRateTotal+"%");
+
+        newCases2W.setText(avgCases2w);
+        recovered2W.setText(avgRecovered2w);
+        deceased2W.setText(avgDeath2w);
+
+        if(casesGrowthRate.equalsIgnoreCase("NA"))
+            newCases2WRate.setText(casesGrowthRate);
+        else newCases2WRate.setText(casesGrowthRate+"%");
+
+        if(recoveryGrowthRate.equalsIgnoreCase("NA"))
+            recovered2WRate.setText(recoveryGrowthRate);
+        else recovered2WRate.setText(recoveryGrowthRate+"%");
+
+        if(deathGrowyhRate.equalsIgnoreCase("NA"))
+            deceased2WRate.setText(deathGrowyhRate);
+        else deceased2WRate.setText(deathGrowyhRate+"%");
     }
 
     @Override
