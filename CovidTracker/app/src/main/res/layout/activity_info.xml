@@ -1,0 +1,136 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clickable="true"
+    android:background="#ffffff"
+    android:layout_gravity="center_vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="128dp"
+        android:padding="8dp"
+        android:id="@+id/infoLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Data Updation Policy"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-black"
+            android:textAlignment="center"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/data_refresh"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:layout_marginTop="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Data Source"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-black"
+            android:textAlignment="center"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/data_source"
+            android:textAlignment="center"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            >
+
+            <TextView
+                android:id="@+id/developerTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Developed By:"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:text="Abhishek Kumar Singh"
+                android:textStyle="italic"
+                android:textColor="#360951"
+                android:textSize="16sp"
+                android:id="@+id/txtName"
+                android:textAllCaps="true"
+                android:layout_marginBottom="5dp"
+                android:layout_below="@id/developerTxt"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="All Rights Reserved."
+                android:layout_below="@id/txtName"
+                android:textAlignment="center"
+                android:textSize="11sp"
+                android:textStyle="normal"
+                android:id="@+id/rights"
+                />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rights"
+                android:layout_margin="8dp"
+                android:layout_centerInParent="true"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:id="@+id/githubIcon"
+                    android:src="@drawable/octocat"
+                    android:layout_margin="4dp"
+                    android:elevation="10dp"
+                    android:onClick="onGithubClicked"
+                    />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_margin="4dp"
+                    android:id="@+id/linkedinIcon"
+                    android:src="@drawable/linkedin"
+                    android:elevation="10dp"
+                    android:onClick="onLinkedInClicked"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+
+
+
+
+</RelativeLayout>

@@ -133,7 +133,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
 
                 apolloClient.query(HistoryallQuery.builder()
                 .build())
-                .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(24, TimeUnit.HOURS))
+                .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(6, TimeUnit.HOURS))
                 .enqueue(new ApolloCall.Callback<HistoryallQuery.Data>() {
                     @Override
                     public void onResponse(@NotNull Response<HistoryallQuery.Data> response) {
@@ -227,105 +227,20 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
 
                     @Override
                     public void onFailure(@NotNull ApolloException e) {
-                        if(!QueryUtils.checkInternetConnectivity(getApplicationContext())){
-                            Toast t = Toast.makeText(getApplicationContext(), "No Network Connection !", Toast.LENGTH_LONG);
-                            t.show();
-                        }
                         GraphActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 loadingSpinner.setVisibility(View.GONE);
                                 errorTextView.setVisibility(View.VISIBLE);
+                                if(!QueryUtils.checkInternetConnectivity(getApplicationContext())){
+                                    Toast t = Toast.makeText(getApplicationContext(), "No Network Connection !", Toast.LENGTH_LONG);
+                                    t.show();
+                                }
                             }
                         });
                         Log.e(TAG, "Fail to load data",e);
                     }
                 });
-
-//        File file = new File(getApplicationContext().getFilesDir(), "covid-historical");
-//        long size = 1024*1024;
-//        DiskLruHttpCacheStore cacheStore = new DiskLruHttpCacheStore(file, size);
-//
-//        OkHttpClient okHttpClient = null;
-//        try {
-//            okHttpClient = new OkHttpClient.Builder().build();
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//
-//
-//        apolloClient = ApolloClient.builder()
-//                .serverUrl(Constants.BASE_URL)
-//                .httpCache(new ApolloHttpCache(cacheStore))
-//                .okHttpClient(okHttpClient)
-//                .build();
-//
-//        apolloClient.query(HistoryQuery.builder()
-//                .build())
-//                .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(4, TimeUnit.HOURS))
-//                .enqueue(new ApolloCall.Callback<HistoryQuery.Data>() {
-//                    @Override
-//                    public void onResponse(@NotNull Response<HistoryQuery.Data> response) {
-//                        //Log.w(TAG+ response.getData().country().states().get(0),""+response.getData().country().states().get(0));
-//
-//
-//
-////                        statesList = response.getData().country().states();
-////                        for(FeedQuery.State s: statesList){
-////                            try {
-////                                String stateName = s.state();
-////                                if (stateName.equals("Total") || stateName.equals("total") || stateName.equals("TOTAL"))
-////                                    stateName = "India";
-////                                Integer cases = s.cases();
-////                                Integer recovered = s.recovered();
-////                                Integer deceased = s.deaths();
-////                                Integer todayCases = s.todayCases();
-////                                Integer todayRecovered = s.todayRecovered();
-////                                Integer todayDeceased = s.todayDeaths();
-////
-////                                Integer active = cases - recovered - deceased;
-////                                Integer activeToday = todayCases - todayRecovered - todayDeceased;
-////                                dataList.add(new OverviewItem(stateName, QueryUtils.formatNumbers(cases.toString()),
-////                                        QueryUtils.formatNumbers(active.toString()),
-////                                        QueryUtils.formatNumbers(recovered.toString()),
-////                                        QueryUtils.formatNumbers(deceased.toString()),
-////                                        QueryUtils.formatNumbers(todayCases.toString()),
-////                                        QueryUtils.formatNumbers(activeToday.toString()),
-////                                        QueryUtils.formatNumbers(todayRecovered.toString()),
-////                                        QueryUtils.formatNumbers(todayDeceased.toString())));
-////                            }catch (Exception e){
-////                                Log.e(TAG, "Error in processing a state item", e);
-////                            }
-////                        }
-////
-////                        MainActivity.this.runOnUiThread(new Runnable() {
-////                            @Override
-////                            public void run() {
-////                                loadingSpinner.setVisibility(View.GONE);
-////                                errorTextView.setVisibility(View.GONE);
-////                                recyclerviewAdapter = new OverviewAdapter(dataList, getApplicationContext(), MainActivity.this);
-////                                recyclerView.setAdapter(recyclerviewAdapter);
-////                            }
-////                        });
-//                    }
-//
-//                    @Override
-//                    public void onFailure(@NotNull ApolloException e) {
-//                        if(!QueryUtils.checkInternetConnectivity(getApplicationContext())){
-//                            Toast t = Toast.makeText(getApplicationContext(), "No Network Connection !", Toast.LENGTH_LONG);
-//                            t.show();
-//                        }
-//                        GraphActivity.this.runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                loadingSpinner.setVisibility(View.GONE);
-//                                errorTextView.setVisibility(View.VISIBLE);
-//                            }
-//                        });
-//                        Log.e(TAG, "Fail to load data",e);
-//                    }
-//                });
-
     }
 
 

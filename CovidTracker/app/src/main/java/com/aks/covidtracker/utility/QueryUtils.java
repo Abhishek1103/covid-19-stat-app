@@ -1,9 +1,12 @@
 package com.aks.covidtracker.utility;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.aks.covidtracker.Constants;
 import com.apollographql.apollo.ApolloClient;
@@ -166,6 +169,7 @@ public class QueryUtils {
         try {
             Double rate = Double.parseDouble(calcRate(start, end, timePeriod));
             Double ans = Math.log10(2) / Math.log10((100.0 + rate) / 100);
+            ans = (double)Math.round(ans);
 
             if (ans.isNaN() || ans.isInfinite())
                 return "NA";
