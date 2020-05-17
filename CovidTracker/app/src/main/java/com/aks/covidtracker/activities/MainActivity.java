@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
 
         apolloClient.query(FeedQuery.builder()
         .build())
-                .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(6, TimeUnit.HOURS))
+                .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(4, TimeUnit.HOURS))
                 .enqueue(new ApolloCall.Callback<FeedQuery.Data>() {
             @Override
             public void onResponse(@NotNull Response<FeedQuery.Data> response) {

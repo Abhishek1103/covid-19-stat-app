@@ -16,6 +16,7 @@ The app shows:
     * New Cases
     * Recoveries
     * Deaths
+  * Doubling Rate of Confirmed cases
 * Nation-wide statistic
 * Graphical representation of trends in increase and spread on Covid-19 cases.
 

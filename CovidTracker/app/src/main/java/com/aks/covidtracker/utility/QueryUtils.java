@@ -3,11 +3,14 @@ package com.aks.covidtracker.utility;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import com.aks.covidtracker.Constants;
 import com.apollographql.apollo.ApolloClient;
 import com.apollographql.apollo.cache.http.ApolloHttpCache;
 import com.apollographql.apollo.cache.http.DiskLruHttpCacheStore;
+
+import org.xml.sax.helpers.AttributesImpl;
 
 import java.util.Locale;
 
@@ -157,6 +160,20 @@ public class QueryUtils {
         if(ans.isNaN() || ans.isInfinite())
             return "NA";
         return String.format(Locale.US,"%.1f",ans);
+    }
+
+    public static String calcDoublingRate(Integer start, Integer end, Integer timePeriod){
+        try {
+            Double rate = Double.parseDouble(calcRate(start, end, timePeriod));
+            Double ans = Math.log10(2) / Math.log10((100.0 + rate) / 100);
+
+            if (ans.isNaN() || ans.isInfinite())
+                return "NA";
+            return String.format(Locale.US, "%.0f", ans);
+        }catch (Exception e){
+            Log.e(TAG, "calcDoublingRate: Could not calculate doubling rate",e );
+            return "NA";
+        }
     }
 
 }

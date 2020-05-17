@@ -72,10 +72,12 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
 
     TextView newCases2W, recovered2W, deceased2W;
     TextView newCases2WRate, recovered2WRate, deceased2WRate;
+    TextView doublingRate;
 
     String recoveryRateTotal, mortalityRateTotal;
     String avgRecovered2w, avgCases2w, avgDeath2w;
     String casesGrowthRate, recoveryGrowthRate, deathGrowyhRate;
+    String casesDoublingRate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +146,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
                             int i =0;
                             HistoryallQuery.Historical before2w = null;
                             try {
-                                before2w = historicalList.get(historicalList.size() - 15);
+                                before2w = historicalList.get(historicalList.size() - 8);
                             }catch (Exception e){
                                 try {
                                     before2w = historicalList.get(historicalList.size()  - 7);
@@ -159,9 +161,9 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
 
                             setOverallRates(casesLatest, recoveredLatest, deceasedLatest);
 
-                            Integer avg_recovered_2w = (recoveredLatest - before2w.recovered())/14;
-                            Integer avg_cases_2w = (casesLatest - (before2w.cases()))/14;
-                            Integer avg_deaths_2w = (deceasedLatest - before2w.deaths())/14;
+                            Integer avg_recovered_2w = (recoveredLatest - before2w.recovered())/7;
+                            Integer avg_cases_2w = (casesLatest - (before2w.cases()))/7;
+                            Integer avg_deaths_2w = (deceasedLatest - before2w.deaths())/7;
 
                             setAvg2w(avg_cases_2w, avg_recovered_2w, avg_deaths_2w);
                             setGrowthRates(casesLatest, recoveredLatest, deceasedLatest, before2w);
@@ -411,6 +413,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
         newCases2WRate = findViewById(R.id.avg_growth_rate);
         recovered2WRate = findViewById(R.id.avg_recovery_rate);
         deceased2WRate = findViewById(R.id.avg_mortality_rate);
+        doublingRate = findViewById(R.id.doubling_rate);
     }
 
     public void setDescriptions(){
@@ -512,9 +515,10 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     }
 
     public void setGrowthRates(Integer cases, Integer recovered, Integer deaths, HistoryallQuery.Historical before2w){
-        casesGrowthRate = QueryUtils.calcRate(before2w.cases(), cases, 14);
-        recoveryGrowthRate = QueryUtils.calcRate(before2w.recovered(),recovered, 14);
-        deathGrowyhRate = QueryUtils.calcRate(before2w.deaths(), deaths, 14);
+        casesGrowthRate = QueryUtils.calcRate(before2w.cases(), cases, 7);
+        recoveryGrowthRate = QueryUtils.calcRate(before2w.recovered(),recovered, 7);
+        deathGrowyhRate = QueryUtils.calcRate(before2w.deaths(), deaths, 7);
+        casesDoublingRate = QueryUtils.calcDoublingRate(before2w.cases(), cases, 7 );
     }
 
     public void displayAdditionalInfo(){
@@ -541,6 +545,10 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
         if(deathGrowyhRate.equalsIgnoreCase("NA"))
             deceased2WRate.setText(deathGrowyhRate);
         else deceased2WRate.setText(deathGrowyhRate+"%");
+
+        if(casesDoublingRate.equalsIgnoreCase("NA"))
+            doublingRate.setText(casesDoublingRate);
+        else doublingRate.setText(casesDoublingRate+" days");
     }
 
     @Override

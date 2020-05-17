@@ -48,7 +48,7 @@
                         android:text="New Cases per Day: "
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="4dp"
-                        android:tooltipText="Average new cases per day in the past two weeks."
+                        android:tooltipText="Average new cases per day in the past one week."
                         android:textColor="@color/confirmed"
                         android:fontFamily="sans-serif-condensed-medium"
                         />
@@ -73,7 +73,7 @@
                         android:textColor="@color/recovered"
                         android:layout_below="@id/avg_new_cases_text"
                         android:fontFamily="sans-serif-condensed-medium"
-                        android:tooltipText="Average recoveries per day in the past two weeks."
+                        android:tooltipText="Average recoveries per day in the past one week."
                         />
 
                     <TextView
@@ -96,7 +96,7 @@
                         android:layout_marginEnd="8dp"
                         android:textColor="@color/deceased"
                         android:fontFamily="sans-serif-condensed-medium"
-                        android:tooltipText="Average deaths per day in the past two weeks."
+                        android:tooltipText="Average deaths per day in the past one week."
                         />
 
                     <TextView
@@ -212,7 +212,7 @@
             android:layout_marginBottom="8dp"
             android:fontFamily="sans-serif-condensed-medium"
             android:text="Avg. Growth Rate of Cases:"
-            android:tooltipText="Average rate of growth of new cases per day in the past 2 weeks."
+            android:tooltipText="Average rate of growth of new cases per day in the past one week."
             android:textColor="@color/confirmed"
             android:layout_marginEnd="8dp"
             android:textSize="16sp" />
@@ -236,7 +236,7 @@
             android:layout_marginBottom="8dp"
             android:fontFamily="sans-serif-condensed-medium"
             android:text="Avg. Growth Rate of Recoveries:"
-            android:tooltipText="Average rate of growth of recovery per day in the past 2 weeks."
+            android:tooltipText="Average rate of growth of recovery per day in the past one week."
             android:textColor="@color/recovered"
             android:layout_marginEnd="8dp"
             android:textSize="16sp"
@@ -259,10 +259,10 @@
             android:id="@+id/avg_mortality_rate_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="sans-serif-condensed-medium"
             android:text="Avg. Growth Rate of Deaths:"
-            android:tooltipText="Average rate of growth of deaths per day in the past 2 weeks."
+            android:tooltipText="Average rate of growth of deaths per day in the past one week."
             android:textColor="@color/deceased"
             android:layout_marginEnd="8dp"
             android:textSize="16sp"
@@ -272,12 +272,39 @@
             android:id="@+id/avg_mortality_rate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="sans-serif-condensed-medium"
             android:text="6.0%"
             android:layout_toEndOf="@id/avg_recovery_rate_text"
             android:layout_below="@id/avg_recovery_rate"
             android:textColor="@color/deceased"
+            android:layout_alignParentRight="true"
+            android:textSize="16sp"
+            />
+
+        <TextView
+            android:id="@+id/doubling_rate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="Doubling Rate:"
+            android:tooltipText="Number of days it will take for cases to double at current growth rate."
+            android:textColor="@color/active"
+            android:layout_marginEnd="8dp"
+            android:textSize="16sp"
+            android:layout_below="@id/avg_mortality_rate_text"/>
+
+        <TextView
+            android:id="@+id/doubling_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="6.0%"
+            android:layout_toEndOf="@id/doubling_rate_text"
+            android:layout_below="@id/avg_mortality_rate"
+            android:textColor="@color/active"
             android:layout_alignParentRight="true"
             android:textSize="16sp" />
 
