@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
     TextView errorTextView = null;
     ExpandableCardView expandableCardView = null;
     DiskLruHttpCacheStore cacheStore = null;
+    Long lastRefresh = 0L;
+    Long lastRefreshClick = 0L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
         loadingSpinner = findViewById(R.id.loading_spinner);
         errorTextView = findViewById(R.id.empty_view);
         errorTextView.setVisibility(View.GONE);
+        lastRefreshClick = System.currentTimeMillis() - 10000L;
 
 
         /* Placeholder data */
@@ -111,76 +115,7 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
 //                .build();
         apolloClient = QueryUtils.buildApolloClient(okHttpClient, cacheStore);
 
-        apolloClient.query(FeedQuery.builder()
-        .build())
-                .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(4, TimeUnit.HOURS))
-                .enqueue(new ApolloCall.Callback<FeedQuery.Data>() {
-            @Override
-            public void onResponse(@NotNull Response<FeedQuery.Data> response) {
-                //Log.w(TAG+ response.getData().country().states().get(0),""+response.getData().country().states().get(0));
-
-               statesList = response.getData().country().states();
-                for(FeedQuery.State s: statesList){
-                    try {
-                        String stateName = s.state();
-                        if (stateName.equals("Total") || stateName.equals("total") || stateName.equals("TOTAL"))
-                            stateName = "India";
-                        Integer cases = s.cases();
-                        Integer recovered = s.recovered();
-                        Integer deceased = s.deaths();
-                        Integer todayCases = s.todayCases();
-                        Integer todayRecovered = s.todayRecovered();
-                        Integer todayDeceased = s.todayDeaths();
-
-                        Integer active = cases - recovered - deceased;
-                        Integer activeToday = todayCases - todayRecovered - todayDeceased;
-                        OverviewItem overviewItem = new OverviewItem(stateName, QueryUtils.formatNumbers(cases.toString()),
-                                QueryUtils.formatNumbers(active.toString()),
-                                QueryUtils.formatNumbers(recovered.toString()),
-                                QueryUtils.formatNumbers(deceased.toString()),
-                                QueryUtils.formatNumbers(todayCases.toString()),
-                                QueryUtils.formatNumbers(activeToday.toString()),
-                                QueryUtils.formatNumbers(todayRecovered.toString()),
-                                QueryUtils.formatNumbers(todayDeceased.toString()));
-
-                        overviewItem.setRecovery_rate(QueryUtils.calcRecoveryRate(cases, recovered));
-                        overviewItem.setMortality_rate(QueryUtils.calcMortalityRate(cases, deceased));
-
-                        dataList.add(overviewItem);
-                    }catch (Exception e){
-                        Log.e(TAG, "Error in processing a state item", e);
-                    }
-                }
-
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadingSpinner.setVisibility(View.GONE);
-                        errorTextView.setVisibility(View.GONE);
-                        recyclerviewAdapter = new OverviewAdapter(dataList, getApplicationContext(), MainActivity.this);
-                        recyclerView.setAdapter(recyclerviewAdapter);
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(@NotNull ApolloException e) {
-                if(!QueryUtils.checkInternetConnectivity(getApplicationContext())) {
-                    Log.i(TAG, "onCreate: No Network Connection! Finishing");
-                    MainActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadingSpinner.setVisibility(View.GONE);
-                            errorTextView.setVisibility(View.VISIBLE);
-                            errorTextView.setText("No Internet Connection!");
-                            showDialog(MainActivity.this);
-                        }
-                    });
-                }
-                Log.e(TAG, "Fail to load data",e);
-            }
-        });
-
+        fetchData();
     }
 
     @Override
@@ -239,8 +174,113 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
             Intent intent = new Intent(this, InfoActivity.class);
             startActivity(intent);
         }
+        if (id == R.id.refresh_item) {
+
+            long currentTime = System.currentTimeMillis();
+            lastRefresh = readRefreshTimeFromSharedPref();
+            if(currentTime - lastRefreshClick <= 10000L)
+                return super.onOptionsItemSelected(item);
+
+            if( currentTime - lastRefresh > Constants.HOUR_MILLIS){
+                lastRefreshClick = currentTime;
+                loadingSpinner.setVisibility(View.VISIBLE);
+                //Toast.makeText(getApplicationContext(),"Refreshing Data...", Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "onOptionsItemSelected: \"Refreshing Data...\"");
+                fetchData();
+            }else{
+                Toast.makeText(this, "Already up-to-date.", Toast.LENGTH_LONG).show();
+            }
+        }
         return super.onOptionsItemSelected(item);
     }
 
+    private void writeRefreshTimeToSharedPref(){
+        SharedPreferences  sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putLong(getString(R.string.overview_refresh_key), System.currentTimeMillis());
+        editor.apply();
+    }
+
+    private Long readRefreshTimeFromSharedPref(){
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        Long defaultValue = System.currentTimeMillis() - Constants.HOUR_MILLIS;
+        return sharedPref.getLong(getString(R.string.overview_refresh_key), defaultValue);
+    }
+
+    private void fetchData(){
+        apolloClient.query(FeedQuery.builder()
+                .build())
+                .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(4, TimeUnit.HOURS))
+                .enqueue(new ApolloCall.Callback<FeedQuery.Data>() {
+                    @Override
+                    public void onResponse(@NotNull Response<FeedQuery.Data> response) {
+                        //Log.w(TAG+ response.getData().country().states().get(0),""+response.getData().country().states().get(0));
+
+                        statesList = response.getData().country().states();
+                        dataList.clear();
+                        for(FeedQuery.State s: statesList){
+                            try {
+                                String stateName = s.state();
+                                if (stateName.equals("Total") || stateName.equals("total") || stateName.equals("TOTAL"))
+                                    stateName = "India";
+                                Integer cases = s.cases();
+                                Integer recovered = s.recovered();
+                                Integer deceased = s.deaths();
+                                Integer todayCases = s.todayCases();
+                                Integer todayRecovered = s.todayRecovered();
+                                Integer todayDeceased = s.todayDeaths();
+
+                                Integer active = cases - recovered - deceased;
+                                Integer activeToday = todayCases - todayRecovered - todayDeceased;
+                                OverviewItem overviewItem = new OverviewItem(stateName, QueryUtils.formatNumbers(cases.toString()),
+                                        QueryUtils.formatNumbers(active.toString()),
+                                        QueryUtils.formatNumbers(recovered.toString()),
+                                        QueryUtils.formatNumbers(deceased.toString()),
+                                        QueryUtils.formatNumbers(todayCases.toString()),
+                                        QueryUtils.formatNumbers(activeToday.toString()),
+                                        QueryUtils.formatNumbers(todayRecovered.toString()),
+                                        QueryUtils.formatNumbers(todayDeceased.toString()));
+
+                                overviewItem.setRecovery_rate(QueryUtils.calcRecoveryRate(cases, recovered));
+                                overviewItem.setMortality_rate(QueryUtils.calcMortalityRate(cases, deceased));
+
+                                dataList.add(overviewItem);
+                            }catch (Exception e){
+                                Log.e(TAG, "Error in processing a state item", e);
+                            }
+                        }
+
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //Toast.makeText(getApplicationContext(),"Data fetched Successfully", Toast.LENGTH_SHORT).show();
+                                Log.i(TAG, "run: Data fetched Successfully");
+                                loadingSpinner.setVisibility(View.GONE);
+                                errorTextView.setVisibility(View.GONE);
+                                recyclerviewAdapter = new OverviewAdapter(dataList, getApplicationContext(), MainActivity.this);
+                                recyclerView.setAdapter(recyclerviewAdapter);
+                                writeRefreshTimeToSharedPref();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull ApolloException e) {
+                        if(!QueryUtils.checkInternetConnectivity(getApplicationContext())) {
+                            Log.i(TAG, "onCreate: No Network Connection! Finishing");
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadingSpinner.setVisibility(View.GONE);
+                                    errorTextView.setVisibility(View.VISIBLE);
+                                    errorTextView.setText("No Internet Connection!");
+                                    showDialog(MainActivity.this);
+                                }
+                            });
+                        }
+                        Log.e(TAG, "Fail to load data",e);
+                    }
+                });
+    }
 
 }

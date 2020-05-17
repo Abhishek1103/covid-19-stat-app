@@ -32,9 +32,13 @@ import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -79,6 +83,10 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     String casesGrowthRate, recoveryGrowthRate, deathGrowyhRate;
     String casesDoublingRate;
 
+    Long lastRefresh = 0L;
+    Long lastRefreshClick = 0L;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +100,9 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
 
         if(getSupportActionBar()!=null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        loadingSpinner = findViewById(R.id.loading_spinner_graph);
+        lastRefreshClick = System.currentTimeMillis() - 10000L;
 
         initLists();
         initCharts(this);
@@ -131,116 +142,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
         OkHttpClient okHttpClient = QueryUtils.initOkHttpClient();
         apolloClient = QueryUtils.buildApolloClient(okHttpClient, cacheStore);
 
-                apolloClient.query(HistoryallQuery.builder()
-                .build())
-                .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(6, TimeUnit.HOURS))
-                .enqueue(new ApolloCall.Callback<HistoryallQuery.Data>() {
-                    @Override
-                    public void onResponse(@NotNull Response<HistoryallQuery.Data> response) {
-                        List<HistoryallQuery.Historical> historicalList = null;
-                        List<HistoryallQuery.State> tempStateList = null;
-                        try{
-                            //historicalList = response.getData().country().states().get(0).historical();
-                            tempStateList = response.getData().country().states();
-                            historicalList = getStateHistory(stateNameClicked, tempStateList);
-                            int i =0;
-                            HistoryallQuery.Historical before2w = null;
-                            try {
-                                before2w = historicalList.get(historicalList.size() - 8);
-                            }catch (Exception e){
-                                try {
-                                    before2w = historicalList.get(historicalList.size()  - 7);
-                                }catch (Exception ex){
-                                    Log.e(TAG, "onResponse: ", ex);
-                                }
-                            }
-                            HistoryallQuery.Historical latest = historicalList.get(historicalList.size()-1);
-                            Integer casesLatest = historicalList.get(historicalList.size()-1).cases();
-                            Integer recoveredLatest = latest.recovered();
-                            Integer deceasedLatest = latest.deaths();
-
-                            setOverallRates(casesLatest, recoveredLatest, deceasedLatest);
-
-                            Integer avg_recovered_2w = (recoveredLatest - before2w.recovered())/7;
-                            Integer avg_cases_2w = (casesLatest - (before2w.cases()))/7;
-                            Integer avg_deaths_2w = (deceasedLatest - before2w.deaths())/7;
-
-                            setAvg2w(avg_cases_2w, avg_recovered_2w, avg_deaths_2w);
-                            setGrowthRates(casesLatest, recoveredLatest, deceasedLatest, before2w);
-
-
-                            for(HistoryallQuery.Historical h : historicalList){
-                                cases.add(new Entry(i, h.cases()));
-                                recovered.add(new Entry(i, h.recovered()));
-                                deaths.add(new Entry(i, h.deaths()));
-                                xAxisValues.add(h.date());
-                                todayCases.add(new Entry(i, h.todayCases()));
-                                active.add(new Entry(i, h.cases() - h.recovered() - h.deaths()));
-                                //Log.i(TAG, "onResponse: "+i);
-                                i++;
-                            }
-                        }catch (Exception e){
-                            Log.e(TAG, "onResponse: Some error occurred", e);
-                        }
-
-                        GraphActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                casesChart.setData(createLineData(cases, "Confirmed Cases"));
-                                recoveredChart.setData(createLineData(recovered, "Recovered Cases"));
-                                deathChart.setData(createLineData(deaths, "Deceased Cases"));
-                                dailyNewChart.setData(createLineData(todayCases, "Daily New Cases"));
-
-                                displayAdditionalInfo();
-
-                                LineDataSet set1 = new LineDataSet(cases, "Confirmed");
-                                set1.setFillAlpha(100);
-                                set1.setCircleColor(getColor(R.color.confirmed));
-                                set1.setColor(getColor(R.color.confirmed));
-                                LineDataSet set2 = new LineDataSet(recovered, "Recovered");
-                                set2.setFillAlpha(110);
-                                set2.setCircleColor(getColor(R.color.recovered));
-                                set2.setColor(getColor(R.color.recovered));
-                                LineDataSet set3 = new LineDataSet(deaths, "Deceased");
-                                set3.setFillAlpha(120);
-                                set3.setCircleColor(getColor(R.color.deceased));
-                                set3.setColor(getColor(R.color.deceased));
-
-                                LineDataSet set4 = new LineDataSet(active, "Active");
-                                set4.setFillAlpha(120);
-                                set4.setCircleColor(getColor(R.color.active));
-                                set4.setColor(getColor(R.color.active));
-
-
-                                ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-                                dataSets.add(set1);
-                                dataSets.add(set2);
-                                dataSets.add(set3);
-                                dataSets.add(set4);
-                                allChart.setData(new LineData(dataSets));
-                                setxAxisValuesOfCharts();
-                                refreshCharts();
-                            }
-                        });
-
-                    }
-
-                    @Override
-                    public void onFailure(@NotNull ApolloException e) {
-                        GraphActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                loadingSpinner.setVisibility(View.GONE);
-                                errorTextView.setVisibility(View.VISIBLE);
-                                if(!QueryUtils.checkInternetConnectivity(getApplicationContext())){
-                                    Toast t = Toast.makeText(getApplicationContext(), "No Network Connection !", Toast.LENGTH_LONG);
-                                    t.show();
-                                }
-                            }
-                        });
-                        Log.e(TAG, "Fail to load data",e);
-                    }
-                });
+        fetchData();
     }
 
 
@@ -465,6 +367,177 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
             doublingRate.setText(casesDoublingRate);
         else doublingRate.setText(casesDoublingRate+" days");
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.info_item) {
+            Intent intent = new Intent(this, InfoActivity.class);
+            startActivity(intent);
+        }
+        if (id == R.id.refresh_item) {
+            long currentTime = System.currentTimeMillis();
+            lastRefresh = readRefreshTimeFromSharedPref();
+            if(currentTime - lastRefreshClick <= 10000L)
+                return super.onOptionsItemSelected(item);
+            if(currentTime - lastRefresh > Constants.HOUR_MILLIS){
+               // Toast.makeText(getApplicationContext(),"Refreshing Data...", Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "onOptionsItemSelected: \"Refreshing Data...\"");
+                lastRefreshClick = currentTime;
+                loadingSpinner.setVisibility(View.VISIBLE);
+                fetchData();
+            }else{
+                Toast.makeText(this, "Already up-to-date.", Toast.LENGTH_LONG).show();
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void writeRefreshTimeToSharedPref(){
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putLong(getString(R.string.graph_refresh_key), System.currentTimeMillis());
+        editor.apply();
+    }
+
+    private Long readRefreshTimeFromSharedPref(){
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        Long defaultValue = System.currentTimeMillis() - Constants.HOUR_MILLIS;
+        return sharedPref.getLong(getString(R.string.graph_refresh_key), defaultValue);
+    }
+
+    private void fetchData(){
+        apolloClient.query(HistoryallQuery.builder()
+                .build())
+                .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(6, TimeUnit.HOURS))
+                .enqueue(new ApolloCall.Callback<HistoryallQuery.Data>() {
+                    @Override
+                    public void onResponse(@NotNull Response<HistoryallQuery.Data> response) {
+                        List<HistoryallQuery.Historical> historicalList = null;
+                        List<HistoryallQuery.State> tempStateList = null;
+                        try{
+                            //historicalList = response.getData().country().states().get(0).historical();
+                            tempStateList = response.getData().country().states();
+                            historicalList = getStateHistory(stateNameClicked, tempStateList);
+                            int i =0;
+                            HistoryallQuery.Historical before2w = null;
+                            try {
+                                before2w = historicalList.get(historicalList.size() - 8);
+                            }catch (Exception e){
+                                try {
+                                    before2w = historicalList.get(historicalList.size()  - 7);
+                                }catch (Exception ex){
+                                    Log.e(TAG, "onResponse: ", ex);
+                                }
+                            }
+                            HistoryallQuery.Historical latest = historicalList.get(historicalList.size()-1);
+                            Integer casesLatest = historicalList.get(historicalList.size()-1).cases();
+                            Integer recoveredLatest = latest.recovered();
+                            Integer deceasedLatest = latest.deaths();
+
+                            setOverallRates(casesLatest, recoveredLatest, deceasedLatest);
+
+                            Integer avg_recovered_2w = (recoveredLatest - before2w.recovered())/7;
+                            Integer avg_cases_2w = (casesLatest - (before2w.cases()))/7;
+                            Integer avg_deaths_2w = (deceasedLatest - before2w.deaths())/7;
+
+                            setAvg2w(avg_cases_2w, avg_recovered_2w, avg_deaths_2w);
+                            setGrowthRates(casesLatest, recoveredLatest, deceasedLatest, before2w);
+
+                            cases.clear();recovered.clear();deaths.clear();xAxisValues.clear();
+                            todayCases.clear();active.clear();
+
+                            for(HistoryallQuery.Historical h : historicalList){
+                                cases.add(new Entry(i, h.cases()));
+                                recovered.add(new Entry(i, h.recovered()));
+                                deaths.add(new Entry(i, h.deaths()));
+                                xAxisValues.add(h.date());
+                                todayCases.add(new Entry(i, h.todayCases()));
+                                active.add(new Entry(i, h.cases() - h.recovered() - h.deaths()));
+                                //Log.i(TAG, "onResponse: "+i);
+                                i++;
+                            }
+                        }catch (Exception e){
+                            Log.e(TAG, "onResponse: Some error occurred", e);
+                        }
+
+                        GraphActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //Toast.makeText(getApplicationContext(),"Data fetched Successfully", Toast.LENGTH_SHORT).show();
+                                Log.i(TAG, "run: Data fetched Successfully");
+                                loadingSpinner.setVisibility(View.GONE);
+                                casesChart.setData(createLineData(cases, "Confirmed Cases"));
+                                recoveredChart.setData(createLineData(recovered, "Recovered Cases"));
+                                deathChart.setData(createLineData(deaths, "Deceased Cases"));
+                                dailyNewChart.setData(createLineData(todayCases, "Daily New Cases"));
+
+                                displayAdditionalInfo();
+
+                                LineDataSet set1 = new LineDataSet(cases, "Confirmed");
+                                set1.setFillAlpha(100);
+                                set1.setCircleColor(getColor(R.color.confirmed));
+                                set1.setColor(getColor(R.color.confirmed));
+                                LineDataSet set2 = new LineDataSet(recovered, "Recovered");
+                                set2.setFillAlpha(110);
+                                set2.setCircleColor(getColor(R.color.recovered));
+                                set2.setColor(getColor(R.color.recovered));
+                                LineDataSet set3 = new LineDataSet(deaths, "Deceased");
+                                set3.setFillAlpha(120);
+                                set3.setCircleColor(getColor(R.color.deceased));
+                                set3.setColor(getColor(R.color.deceased));
+
+                                LineDataSet set4 = new LineDataSet(active, "Active");
+                                set4.setFillAlpha(120);
+                                set4.setCircleColor(getColor(R.color.active));
+                                set4.setColor(getColor(R.color.active));
+
+
+                                ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+                                dataSets.add(set1);
+                                dataSets.add(set2);
+                                dataSets.add(set3);
+                                dataSets.add(set4);
+                                allChart.setData(new LineData(dataSets));
+                                setxAxisValuesOfCharts();
+                                refreshCharts();
+                                writeRefreshTimeToSharedPref();
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull ApolloException e) {
+                        GraphActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadingSpinner.setVisibility(View.GONE);
+                                errorTextView.setVisibility(View.VISIBLE);
+                                if(!QueryUtils.checkInternetConnectivity(getApplicationContext())){
+                                    Toast t = Toast.makeText(getApplicationContext(), "No Network Connection !", Toast.LENGTH_LONG);
+                                    t.show();
+                                }
+                            }
+                        });
+                        Log.e(TAG, "Fail to load data",e);
+                    }
+                });
+    }
+
 
     @Override
     public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {

@@ -2,9 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/refresh_item"
+        android:title="Refresh"
+        android:icon="@drawable/icon_refresh_24"
+        app:showAsAction="ifRoom"
+        android:tooltipText="Refresh"
+        />
+
     <item
         android:id="@+id/info_item"
         android:title="Info"
         android:icon="@drawable/info_24"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom"
+        android:tooltipText="App Info"/>
+
+
 </menu>

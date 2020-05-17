@@ -9,10 +9,12 @@
     <string name="past_2w">Past One Week</string>
     <string name="developer_info">App Information</string>
     <string name="data_refresh">
-        Overview data is refreshed every 4 hours.\n
-        Graph data and additional info is refreshed every 6 hours.
+        All data is automatically refreshed periodically.\nOverview data is refreshed every 4 hours.\nGraph data and additional info is refreshed every 6 hours.\nThe user can also refresh manually though it is not advised.
     </string>
     <string name="data_source">
         All data is fetched from covid19-web-api which derives its data from Ministry of Health and Family Welfare and from various state government ministry websites.
     </string>
+
+    <string name="overview_refresh_key">overview_refresh</string>
+    <string name="graph_refresh_key">graph_refresh</string>
 </resources>
