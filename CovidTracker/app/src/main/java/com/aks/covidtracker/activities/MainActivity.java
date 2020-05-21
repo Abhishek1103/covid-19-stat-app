@@ -80,41 +80,14 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
         errorTextView.setVisibility(View.GONE);
         lastRefreshClick = System.currentTimeMillis() - 10000L;
 
-
-        /* Placeholder data */
-//        for(int i=0;i<10;i++){
-//            OverviewItem item = new OverviewItem(
-//                    "State "+i,
-//                    ""+i*5,
-//                    ""+i*4*0.9,
-//                    ""+i*2,
-//                    ""+i,
-//                    "State "+i,
-//                    ""+i*5,
-//                    ""+i*4*0.9,
-//                    ""+i*2
-//            );
-//
-//            dataList.add(item);
-//        }
-//        loadingSpinner.setVisibility(View.GONE);
-//        errorTextView.setVisibility(View.GONE);
         recyclerviewAdapter = new OverviewAdapter(dataList, this, MainActivity.this);
         recyclerView.setAdapter(recyclerviewAdapter);
 
         // Apollo LRU cache
-        File file = new File(getApplicationContext().getFilesDir(), "covid-states");
-        long size = 1024*1024;
-        cacheStore = new DiskLruHttpCacheStore(file, size);
+        cacheStore = QueryUtils.createHttpCache(this,"covid-states");
         OkHttpClient okHttpClient = QueryUtils.initOkHttpClient();
 
-//        apolloClient = ApolloClient.builder()
-//                .serverUrl(BASE_URL)
-//                .httpCache(new ApolloHttpCache(cacheStore))
-//                .okHttpClient(okHttpClient)
-//                .build();
         apolloClient = QueryUtils.buildApolloClient(okHttpClient, cacheStore);
-
         fetchData();
     }
 
@@ -130,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
             startActivity(intent);
         //}
     }
-
 
     public void showDialog(Context context){
         new AlertDialog.Builder(context)
@@ -180,11 +152,16 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
             lastRefresh = readRefreshTimeFromSharedPref();
             if(currentTime - lastRefreshClick <= 10000L)
                 return super.onOptionsItemSelected(item);
-
             if( currentTime - lastRefresh > Constants.HOUR_MILLIS){
                 lastRefreshClick = currentTime;
                 loadingSpinner.setVisibility(View.VISIBLE);
-                //Toast.makeText(getApplicationContext(),"Refreshing Data...", Toast.LENGTH_SHORT).show();
+                try{
+                    cacheStore.delete();
+                    Log.i(TAG, "onOptionsItemSelected: Cache Cleared");
+                }catch (Exception e){
+                    Log.e(TAG, "onOptionsItemSelected: Unable to clear cache", e);
+                }
+                Toast.makeText(getApplicationContext(),"Refreshing Data...", Toast.LENGTH_SHORT).show();
                 Log.i(TAG, "onOptionsItemSelected: \"Refreshing Data...\"");
                 fetchData();
             }else{
@@ -208,13 +185,13 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
     }
 
     private void fetchData(){
+        apolloClient = QueryUtils.buildApolloClient(QueryUtils.initOkHttpClient(), QueryUtils.createHttpCache(this,"covid-states"));
         apolloClient.query(FeedQuery.builder()
                 .build())
                 .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(4, TimeUnit.HOURS))
                 .enqueue(new ApolloCall.Callback<FeedQuery.Data>() {
                     @Override
                     public void onResponse(@NotNull Response<FeedQuery.Data> response) {
-                        //Log.w(TAG+ response.getData().country().states().get(0),""+response.getData().country().states().get(0));
 
                         statesList = response.getData().country().states();
                         dataList.clear();
@@ -282,5 +259,7 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
                     }
                 });
     }
+
+
 
 }

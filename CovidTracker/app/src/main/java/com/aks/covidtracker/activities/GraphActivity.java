@@ -64,7 +64,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     ProgressBar loadingSpinner = null;
     TextView errorTextView = null;
     private File cacheFile = null;
-    private DiskLruHttpCacheStore cacheStore = null;
+    private DiskLruHttpCacheStore cacheStore;
     private LineChart dailyNewChart, casesChart, recoveredChart, deathChart, allChart = null;
 
     List<Entry> cases, active, recovered, deaths, todayCases, todayRecovered, todayDeaths;
@@ -111,33 +111,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
 
         setTitle(stateName);
 
-//        cases.add(new Entry(0, 1));
-//        cases.add(new Entry(1, 2));
-//        cases.add(new Entry(2, 6));
-//        cases.add(new Entry(3, 5));
-//        cases.add(new Entry(4, 8));
-//        cases.add(new Entry(5, 8));
-//        cases.add(new Entry(6, 8));
-//        cases.add(new Entry(7, 8));
-//        ArrayList<String> xAxisVals = new ArrayList<>(Arrays.asList("Jan","Feb","Mar", "Apr","May","Jun","Jul","Aug"));
-
-
-//        LineDataSet set1 = new LineDataSet(cases, "Confirmed Cases");
-//        set1.setFillAlpha(110);
-//
-//        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-//        dataSets.add(set1);
-//
-//        LineData data = new LineData(dataSets);
-//        casesChart.setData(data);
-//
-//        casesChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisVals));
-
-
-
-        File file = new File(getApplicationContext().getFilesDir(), "covid-historical");
-        long size = 1024*1024;
-        final DiskLruHttpCacheStore cacheStore = new DiskLruHttpCacheStore(file, size);
+        cacheStore = QueryUtils.createHttpCache(this, "covid-historical");
 
         OkHttpClient okHttpClient = QueryUtils.initOkHttpClient();
         apolloClient = QueryUtils.buildApolloClient(okHttpClient, cacheStore);
@@ -395,9 +369,16 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
                 return super.onOptionsItemSelected(item);
             if(currentTime - lastRefresh > Constants.HOUR_MILLIS){
                // Toast.makeText(getApplicationContext(),"Refreshing Data...", Toast.LENGTH_SHORT).show();
+                try{
+                    cacheStore.delete();
+                    Log.i(TAG, "onOptionsItemSelected: Cache Cleared");
+                }catch (Exception e){
+                    Log.e(TAG, "onOptionsItemSelected: Unable to clear cache", e);
+                }
                 Log.i(TAG, "onOptionsItemSelected: \"Refreshing Data...\"");
                 lastRefreshClick = currentTime;
                 loadingSpinner.setVisibility(View.VISIBLE);
+                Toast.makeText(getApplicationContext(),"Refreshing Data...", Toast.LENGTH_SHORT).show();
                 fetchData();
             }else{
                 Toast.makeText(this, "Already up-to-date.", Toast.LENGTH_LONG).show();
@@ -420,6 +401,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     }
 
     private void fetchData(){
+        apolloClient = QueryUtils.buildApolloClient(QueryUtils.initOkHttpClient(), QueryUtils.createHttpCache(this,"covid-historical"));
         apolloClient.query(HistoryallQuery.builder()
                 .build())
                 .httpCachePolicy(HttpCachePolicy.CACHE_FIRST.expireAfter(6, TimeUnit.HOURS))

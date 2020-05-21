@@ -15,6 +15,7 @@ import com.apollographql.apollo.cache.http.DiskLruHttpCacheStore;
 
 import org.xml.sax.helpers.AttributesImpl;
 
+import java.io.File;
 import java.util.Locale;
 
 import okhttp3.OkHttpClient;
@@ -90,6 +91,7 @@ public class QueryUtils {
                 return stringBuffer.toString();
             }else if(n < 10000000){
                 int len = num.length();
+                stringBuffer.insert(len-3,',');
                 stringBuffer.insert(len-5, ',');
                 return stringBuffer.toString();
             }
@@ -111,6 +113,13 @@ public class QueryUtils {
             return okHttpClient;
         }
     }
+
+    public static DiskLruHttpCacheStore createHttpCache(Context context, String name){
+        File file = new File(context.getFilesDir(), name);
+        long size = 1024*1024;
+        return new DiskLruHttpCacheStore(file, size);
+    }
+
 
     // create an Apollo client with an OkHTTPClient and DiskLRUCache
     public static ApolloClient buildApolloClient(OkHttpClient okHttpClient, DiskLruHttpCacheStore cacheStore){
