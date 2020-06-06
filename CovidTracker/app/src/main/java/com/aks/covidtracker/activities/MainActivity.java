@@ -96,31 +96,39 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
         OverviewItem item = dataList.get(position);
         //TODO: when an item on recycler view is clicked
         Log.i(TAG, "onStateClick: "+item.getState()+" clicked.");
-        //if(item.getState().equalsIgnoreCase("INDIA")){
+        if(item.getState().equalsIgnoreCase("State Unassigned") || item.getState().equalsIgnoreCase("Unassigned")){
+            Log.i(TAG, "onStateClick: State Unassigned clicked. Showing info Dialog");
+            showDialog(this, "State Unassigned", "MoHFW website reports that these are the cases that are being reassigned to states",0);
+        }else {
+            //if(item.getState().equalsIgnoreCase("INDIA")){
             Log.i(TAG, "onStateClick: Opening GraphActivity");
             Intent intent = new Intent(this, GraphActivity.class);
             intent.putExtra("state", item.getState());
             startActivity(intent);
-        //}
+            //}
+        }
     }
 
-    public void showDialog(Context context){
+    public void showDialog(Context context, String title, String message, int flag){
+        final int finishFlag = flag;
         new AlertDialog.Builder(context)
-                .setTitle("No Internet Connection!")
-                .setMessage("The app needs an active internet connection to fetch latest data. Connect to internet and restart the app.")
+                .setTitle(title)
+                .setMessage(message)
 
                 // Specifying a listener allows you to take an action before dismissing the dialog.
                 // The dialog is automatically dismissed when a dialog button is clicked.
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        finish();
+                        if(finishFlag==1)
+                            finish();
                     }
                 })
 
                 // A null listener allows the button to dismiss the dialog and take no further action.
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        finish();
+                        if(finishFlag==1)
+                            finish();
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -251,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
                                     loadingSpinner.setVisibility(View.GONE);
                                     errorTextView.setVisibility(View.VISIBLE);
                                     errorTextView.setText("No Internet Connection!");
-                                    showDialog(MainActivity.this);
+                                    showDialog(MainActivity.this, "No Internet Connection!", "The app needs an active internet connection to fetch latest data. Connect to internet and restart the app.",1);
                                 }
                             });
                         }
