@@ -19,8 +19,12 @@ import com.apollographql.apollo.api.cache.http.HttpCachePolicy;
 import com.apollographql.apollo.cache.http.ApolloHttpCache;
 import com.apollographql.apollo.cache.http.DiskLruHttpCacheStore;
 import com.apollographql.apollo.exception.ApolloException;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -65,9 +69,11 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     TextView errorTextView = null;
     private File cacheFile = null;
     private DiskLruHttpCacheStore cacheStore;
-    private LineChart dailyNewChart, casesChart, recoveredChart, deathChart, allChart = null;
+    private LineChart /*dailyNewChart, casesChart, recoveredChart, deathChart,*/ allChart = null;
+    private BarChart dailyNewChart, recoveredChart, deathChart, dailyTrendsChart;
 
-    List<Entry> cases, active, recovered, deaths, todayCases, todayRecovered, todayDeaths;
+    List<Entry> cases, active, recovered, deaths;/*todayCases, todayRecovered, todayDeaths*/
+    List<BarEntry> todayCases,todayRecovered, todayDeaths;
     public static ArrayList<String> xAxisValues = null;
     String stateNameClicked = null;
     ExpandableCardView expandableCardView;
@@ -132,19 +138,28 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     }
 
     public void initCharts(Context context){
-        casesChart = findViewById(R.id.graph_conf);
+       // casesChart = findViewById(R.id.graph_conf);
+        dailyTrendsChart = findViewById(R.id.graph_conf);
         recoveredChart = findViewById(R.id.graph_recovered);
         deathChart = findViewById(R.id.graph_deceased);
         allChart = findViewById(R.id.graph_all);
         dailyNewChart = findViewById(R.id.graph_daily_new);
 
-        casesChart.setOnChartGestureListener(this);
-        casesChart.setOnChartValueSelectedListener(this);
-        casesChart.setDragEnabled(true);
-        casesChart.setScaleEnabled(false);
-        casesChart.setDrawGridBackground(false);
-        casesChart.setTouchEnabled(true);
-        casesChart.getAxisRight().setEnabled(false);
+//        casesChart.setOnChartGestureListener(this);
+//        casesChart.setOnChartValueSelectedListener(this);
+//        casesChart.setDragEnabled(true);
+//        casesChart.setScaleEnabled(false);
+//        casesChart.setDrawGridBackground(false);
+//        casesChart.setTouchEnabled(true);
+//        casesChart.getAxisRight().setEnabled(false);
+
+        dailyTrendsChart.setOnChartGestureListener(this);
+        dailyTrendsChart.setOnChartValueSelectedListener(this);
+        dailyTrendsChart.setDragEnabled(true);
+        dailyTrendsChart.setScaleEnabled(false);
+        dailyTrendsChart.setDrawGridBackground(false);
+        dailyTrendsChart.setTouchEnabled(true);
+        dailyTrendsChart.getAxisRight().setEnabled(false);
 
         recoveredChart.setOnChartGestureListener(this);
         recoveredChart.setOnChartValueSelectedListener(this);
@@ -180,13 +195,15 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
 
         Description d = new Description();
         d.setText("");
-        casesChart.setDescription(d);
+        //casesChart.setDescription(d);
+        dailyTrendsChart.setDescription(d);
         recoveredChart.setDescription(d);
         deathChart.setDescription(d);
         allChart.setDescription(d);
 
         MyMarkerView markerView = new MyMarkerView(context, R.layout.my_marker_view);
-        casesChart.setMarker(markerView);
+        //casesChart.setMarker(markerView);
+        dailyTrendsChart.setMarker(markerView);
         recoveredChart.setMarker(markerView);
         deathChart.setMarker(markerView);
         allChart.setMarker(markerView);
@@ -208,7 +225,8 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     }
 
     public void setDescriptions(){
-        casesChart.setDescription(createDescription("cases"));
+        //casesChart.setDescription(createDescription("cases"));
+        dailyTrendsChart.setDescription(createDescription("trends"));
         recoveredChart.setDescription(createDescription("recovered"));
         deathChart.setDescription(createDescription("death"));
         dailyNewChart.setDescription(createDescription("daily_new"));
@@ -235,8 +253,31 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
         return new LineData(dataSets);
     }
 
+    public BarData createBarData(List<BarEntry> list, String label){
+        BarDataSet set = new BarDataSet(list, label);
+        //set.setFillAlpha(100);
+        set.setDrawValues(false);
+        switch(label){
+            case "Daily New Cases":
+            case "Confirmed Cases": //set.setCircleColor(getColor(R.color.confirmed));
+                set.setColor(getColor(R.color.confirmed));
+                break;
+            case "Recovered Cases": //set.setCircleColor(getColor(R.color.recovered));
+                set.setColor(getColor(R.color.recovered));
+                break;
+            case "Deceased Cases": //set.setCircleColor(getColor(R.color.deceased));
+                set.setColor(getColor(R.color.deceased));
+                break;
+            default://set.setCircleColor(getColor(R.color.active));
+        }
+//        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+//        dataSets.add(set);
+        return new BarData(set);
+    }
+
     public void setxAxisValuesOfCharts(){
-        casesChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisValues));
+        //casesChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisValues));
+        dailyTrendsChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisValues));
         recoveredChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisValues));
         deathChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisValues));
         allChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisValues));
@@ -244,13 +285,15 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     }
 
     public void setYAxisMin(){
-        casesChart.getAxisRight().setAxisMinimum(0.0f);
+       // casesChart.getAxisRight().setAxisMinimum(0.0f);
+        dailyTrendsChart.getAxisRight().setAxisMinimum(0.0f);
         recoveredChart.getAxisRight().setAxisMinimum(0.0f);
         deathChart.getAxisRight().setAxisMinimum(0.0f);
         allChart.getAxisRight().setAxisMinimum(0.0f);
         dailyNewChart.getAxisRight().setAxisMinimum(0.0f);
 
-        casesChart.getAxisLeft().setAxisMinimum(0.0f);
+       // casesChart.getAxisLeft().setAxisMinimum(0.0f);
+        dailyTrendsChart.getAxisLeft().setAxisMinimum(0.0f);
         recoveredChart.getAxisLeft().setAxisMinimum(0.0f);
         deathChart.getAxisLeft().setAxisMinimum(0.0f);
         allChart.getAxisLeft().setAxisMinimum(0.0f);
@@ -260,7 +303,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     public Description createDescription(String chart){
         Description d = new Description();
         switch(chart){
-            case "cases": d.setText("Total Confirmed cases");
+            case "trends": d.setText("Daily Trends");
             break;
             case "recovered": d.setText("Total Recovered Cases");
             break;
@@ -273,7 +316,8 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     }
 
     public void refreshCharts(){
-        casesChart.invalidate();
+       // casesChart.invalidate();
+        dailyTrendsChart.invalidate();
         deathChart.invalidate();
         recoveredChart.invalidate();
         allChart.invalidate();
@@ -442,14 +486,19 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
                             cases.clear();recovered.clear();deaths.clear();xAxisValues.clear();
                             todayCases.clear();active.clear();
 
+                            // Taking only 2 months past data
+                            historicalList = historicalList.subList(historicalList.size()-61, historicalList.size());
+
                             for(HistoryallQuery.Historical h : historicalList){
                                 cases.add(new Entry(i, h.cases()));
                                 recovered.add(new Entry(i, h.recovered()));
                                 deaths.add(new Entry(i, h.deaths()));
                                 xAxisValues.add(h.date());
-                                todayCases.add(new Entry(i, h.todayCases()));
+                                todayCases.add(new BarEntry(i, h.todayCases()));
                                 active.add(new Entry(i, h.cases() - h.recovered() - h.deaths()));
                                 //Log.i(TAG, "onResponse: "+i);
+                                todayRecovered.add(new BarEntry(i, h.todayRecovered()));
+                                todayDeaths.add(new BarEntry(i, h.todayDeaths()));
                                 i++;
                             }
                         }catch (Exception e){
@@ -462,12 +511,18 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
                                 //Toast.makeText(getApplicationContext(),"Data fetched Successfully", Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "run: Data fetched Successfully");
                                 loadingSpinner.setVisibility(View.GONE);
-                                casesChart.setData(createLineData(cases, "Confirmed Cases"));
-                                recoveredChart.setData(createLineData(recovered, "Recovered Cases"));
-                                deathChart.setData(createLineData(deaths, "Deceased Cases"));
-                                dailyNewChart.setData(createLineData(todayCases, "Daily New Cases"));
+                               // casesChart.setData(createLineData(active, "Daily Active Cases"));
+                                recoveredChart.setData(createBarData(todayRecovered, "Recovered Cases"));
+                                deathChart.setData(createBarData(todayDeaths, "Deceased Cases"));
+                                //dailyNewChart.setData(createLineData(todayCases, "Daily New Cases"));
+
+                                dailyNewChart.setData(createBarData(todayCases, "Daily New Cases"));
+
+                                setTrendsGraph();
 
                                 displayAdditionalInfo();
+
+
 
                                 LineDataSet set1 = new LineDataSet(cases, "Confirmed");
                                 set1.setFillAlpha(100);
@@ -570,5 +625,20 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     @Override
     public void onNothingSelected() {
 
+    }
+
+    void setTrendsGraph(){
+        BarDataSet set1 = new BarDataSet(todayCases, "New Cases");
+        BarDataSet set2 = new BarDataSet(todayRecovered, "Recovered");
+        BarDataSet set3 = new BarDataSet(todayDeaths, "Deaths");
+
+        set1.setColor(getColor(R.color.confirmed));
+        set2.setColor(getColor(R.color.recovered));
+        set3.setColor(getColor(R.color.deceased));
+
+        BarData data = new BarData(set1, set2, set3);
+        dailyTrendsChart.setData(data);
+        //dailyTrendsChart.groupBars();
+        dailyTrendsChart.invalidate();
     }
 }
