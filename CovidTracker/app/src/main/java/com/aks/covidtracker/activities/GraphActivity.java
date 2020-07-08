@@ -73,7 +73,8 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     private BarChart dailyNewChart, recoveredChart, deathChart, dailyTrendsChart;
 
     List<Entry> cases, active, recovered, deaths;/*todayCases, todayRecovered, todayDeaths*/
-    List<BarEntry> todayCases,todayRecovered, todayDeaths;
+    List<BarEntry> todayCases,todayRecovered, todayDeaths, stackedBarEntry;
+
     public static ArrayList<String> xAxisValues = null;
     String stateNameClicked = null;
     ExpandableCardView expandableCardView;
@@ -135,6 +136,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
         todayRecovered = new ArrayList<>();
         todayDeaths = new ArrayList<>();
         xAxisValues = new ArrayList<>();
+        stackedBarEntry = new ArrayList<>();
     }
 
     public void initCharts(Context context){
@@ -203,7 +205,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
 
         MyMarkerView markerView = new MyMarkerView(context, R.layout.my_marker_view);
         //casesChart.setMarker(markerView);
-        dailyTrendsChart.setMarker(markerView);
+        //dailyTrendsChart.setMarker(markerView);
         recoveredChart.setMarker(markerView);
         deathChart.setMarker(markerView);
         allChart.setMarker(markerView);
@@ -499,6 +501,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
                                 //Log.i(TAG, "onResponse: "+i);
                                 todayRecovered.add(new BarEntry(i, h.todayRecovered()));
                                 todayDeaths.add(new BarEntry(i, h.todayDeaths()));
+                                stackedBarEntry.add(new BarEntry(i, new float[]{h.todayCases(), h.todayRecovered(), h.todayDeaths()}));
                                 i++;
                             }
                         }catch (Exception e){
@@ -519,9 +522,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
                                 dailyNewChart.setData(createBarData(todayCases, "Daily New Cases"));
 
                                 setTrendsGraph();
-
                                 displayAdditionalInfo();
-
 
 
                                 LineDataSet set1 = new LineDataSet(cases, "Confirmed");
@@ -628,6 +629,7 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
     }
 
     void setTrendsGraph(){
+
         BarDataSet set1 = new BarDataSet(todayCases, "New Cases");
         BarDataSet set2 = new BarDataSet(todayRecovered, "Recovered");
         BarDataSet set3 = new BarDataSet(todayDeaths, "Deaths");
@@ -636,8 +638,15 @@ public class GraphActivity extends AppCompatActivity implements OnChartGestureLi
         set2.setColor(getColor(R.color.recovered));
         set3.setColor(getColor(R.color.deceased));
 
-        BarData data = new BarData(set1, set2, set3);
+        BarDataSet stackedSet = new BarDataSet(stackedBarEntry, "stacked");
+        stackedSet.setStackLabels(new String[]{"Daily New Cases","Daily Recoveries","Daily Deaths"});
+        stackedSet.setColors(getColor(R.color.confirmed), getColor(R.color.recovered), getColor(R.color.deceased));
+        stackedSet.setDrawValues(false);
+       // BarData data = new BarData(set1, set2, set3);
+
+        BarData data = new BarData(stackedSet);
         dailyTrendsChart.setData(data);
+        //dailyTrendsChart.groupBars(0.06f,0.02f,0.25f);
         //dailyTrendsChart.groupBars();
         dailyTrendsChart.invalidate();
     }
