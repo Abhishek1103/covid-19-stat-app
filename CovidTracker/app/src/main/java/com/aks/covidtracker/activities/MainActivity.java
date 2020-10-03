@@ -101,10 +101,12 @@ public class MainActivity extends AppCompatActivity implements OverviewAdapter.O
             showDialog(this, "State Unassigned", "MoHFW website reports that these are the cases that are being reassigned to states",0);
         }else {
             //if(item.getState().equalsIgnoreCase("INDIA")){
-            Log.i(TAG, "onStateClick: Opening GraphActivity");
-            Intent intent = new Intent(this, GraphActivity.class);
-            intent.putExtra("state", item.getState());
-            startActivity(intent);
+//            Log.i(TAG, "onStateClick: Opening GraphActivity");
+//            Intent intent = new Intent(this, GraphActivity.class);
+//            intent.putExtra("state", item.getState());
+//            startActivity(intent);
+            Toast.makeText(this, "Historical Data has been discontinued",
+                    Toast.LENGTH_LONG).show();
             //}
         }
     }
